@@ -1,6 +1,6 @@
 // enum DataType {}
 
-use super::entry::{DirectoryEntry, DataLocation};
+use super::entry::{DataLocation, DirectoryEntry};
 
 pub fn process_dir_tables(entries: &[DirectoryEntry], value_data: &[u8]) {
     entries.iter().for_each(|entry| {
@@ -10,9 +10,7 @@ pub fn process_dir_tables(entries: &[DirectoryEntry], value_data: &[u8]) {
         };
 
         // let chunk = &value_data[entry.offset as usize..entry.size as usize];
-
     });
 }
-
 
 // fn get_tag_id()

@@ -1,5 +1,5 @@
 mod block;
-mod entry;
 mod data;
+mod entry;
 
-pub use block::DirectoryBlock;
+pub use block::{DirectoryBlock, DirectoryParseError};

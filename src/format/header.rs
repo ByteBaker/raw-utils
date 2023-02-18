@@ -8,11 +8,18 @@ pub enum Endianness {
     BE,
 }
 
-#[allow(dead_code)]
+// #[allow(dead_code)]
 #[derive(Debug)]
 pub enum CameraSignature {
     HEAPCCDR,
     HEAPJPGM,
+}
+
+#[derive(Debug)]
+pub enum HeaderParseError {
+    InvalidLength,
+    UnknownBytes,
+    InvalidSignature,
 }
 
 #[derive(Debug)]
@@ -24,23 +31,24 @@ pub struct Header {
     pub reserved: [u32; 2],
 }
 
-impl From<&[u8]> for Header {
-    fn from(slice: &[u8]) -> Self {
+impl TryFrom<&[u8]> for Header {
+    type Error = HeaderParseError;
+    fn try_from(slice: &[u8]) -> Result<Self, Self::Error> {
         if slice.len() < 26 {
-            panic!("Can't parse header. Not a RAW file.")
+            return Err(HeaderParseError::InvalidLength);
         }
         let mut cursor = Cursor::new(slice);
         let endianness = match cursor.read_u16::<LittleEndian>().unwrap() {
             0x4949 => Endianness::LE,
             0x4D4D => Endianness::BE,
-            _ => unreachable!(),
+            _ => return Err(HeaderParseError::UnknownBytes),
         };
 
         let header_length = cursor.read_u32::<LittleEndian>().unwrap();
         let signature = match cursor.read_uint::<LittleEndian>(8).unwrap() {
             0x5244434350414548 => CameraSignature::HEAPCCDR,
             0x4D47504A50414548 => CameraSignature::HEAPJPGM,
-            _ => unreachable!(),
+            _ => return Err(HeaderParseError::InvalidSignature),
         };
 
         let crw_version = cursor.read_u32::<LittleEndian>().unwrap();
@@ -49,12 +57,12 @@ impl From<&[u8]> for Header {
             cursor.read_u32::<LittleEndian>().unwrap(),
         ];
 
-        Self {
+        Ok(Self {
             endianness,
             header_length,
             signature,
             crw_version,
             reserved,
-        }
+        })
     }
 }
