@@ -1,4 +1,4 @@
-pub mod core;
+mod core;
 mod directory;
 mod header;
 

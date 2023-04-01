@@ -1,17 +1,19 @@
-// #![allow(dead_code, unused_variables)]
-
 mod format;
 
 use format::RawImage;
 
-use std::{env, fs::File};
+use std::{
+    env,
+    fs::File,
+    io::{Error, ErrorKind},
+};
 
-const FILE_NAME: &str = "RAW_CANON_300D.crw";
+fn main() -> Result<(), Error> {
+    let filename = env::args()
+        .nth(1)
+        .ok_or_else(|| Error::new(ErrorKind::Other, "No file path provided"))?;
 
-fn main() {
-    let filename = env::args().nth(1).unwrap_or(FILE_NAME.into());
-
-    let file = File::open(filename).unwrap();
+    let file = File::open(filename)?;
     match RawImage::try_new(file) {
         Ok(raw) => {
             println!("Header is {:?}", raw.header());
@@ -20,5 +22,7 @@ fn main() {
         Err(e) => {
             eprintln!("Error: {e}");
         }
-    }
+    };
+
+    Ok(())
 }

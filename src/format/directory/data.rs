@@ -1,5 +1,4 @@
-// enum DataType {}
-
+#![allow(warnings)]
 use super::entry::{DataLocation, DirectoryEntry};
 
 pub fn process_dir_tables(entries: &[DirectoryEntry], value_data: &[u8]) {
@@ -8,9 +7,6 @@ pub fn process_dir_tables(entries: &[DirectoryEntry], value_data: &[u8]) {
             DataLocation::ValueData => todo!(),
             DataLocation::Directory => todo!(),
         };
-
-        // let chunk = &value_data[entry.offset as usize..entry.size as usize];
     });
 }
 
-// fn get_tag_id()
